@@ -1,0 +1,5 @@
+This is a Flask web app that interacts with ffmirror to allow you to view a
+local fanfiction mirror over the Web. It fulfills the same purpose as the
+now-obsolete server.py in ffmirror.
+
+To run, 1. install Flask, 2. run ffserve.py on the command line.
