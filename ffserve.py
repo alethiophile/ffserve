@@ -7,11 +7,7 @@ import os
 from flask import Flask, g, render_template, url_for, request
 app = Flask('ffserve')
 
-DEBUG = True
-FF_DIR = '/home/tom/ffn/ffn'
-PAGE_THRES = 100
-
-app.config.from_object(__name__) # change this later
+app.config.from_envvar('FFSERVE_SETTINGS')
 
 @app.before_request
 def req_setup():
