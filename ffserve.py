@@ -2,12 +2,21 @@
 
 import ffmirror.mirror as mirror
 from datetime import datetime
-import os
+import os, argparse
 
 from flask import Flask, g, render_template, url_for, request
 app = Flask('ffserve')
 
-app.config.from_envvar('FFSERVE_SETTINGS')
+if __name__=='__main__':
+    ap = argparse.ArgumentParser(description="Browse an ffmirror archive over the Web")
+    ap.add_argument("-d", "--debug", dest="DEBUG", action="store_true", help="Debug in browser", default=False)
+    ap.add_argument("--page-thres", dest="PAGE_THRES", type=int, help="Minimum story entries per page", default=100)
+    ap.add_argument("-l", "--local", action="store_true", help="Listen only on local interface", default=False)
+    ap.add_argument("-p", "--port", type=int, help="HTTP server port", default=5000)
+    ap.add_argument("FF_DIR", help="Mirror directory")
+    args = ap.parse_args()
+
+app.config.from_object(args)
 
 @app.before_request
 def req_setup():
@@ -48,6 +57,9 @@ def index():
     ind = g.mirror.get_index()
     pagenum = int(request.args.get('page', 0))
     pages = make_pages(ind)
+    if pagenum == -1:
+        pages = [ [i for sl in pages for i in sl] ]
+        pagenum = 0
     return render_template('main_index.html', ind=ind, pages=pages, pagenum=pagenum)
 
 @app.route('/story/<path:filepath>')
@@ -65,7 +77,11 @@ def tag(tagname):
     ind = { k: [i for i in ind[k] if tagname in i['tags']] for k in ind.keys() }
     ind = { k: ind[k] for k in ind.keys() if len(ind[k]) != 0 }
     pages = make_pages(ind)
+    if pagenum == -1:
+        pages = [ [i for sl in pages for i in sl] ]
+        pagenum = 0
     return render_template('main_index.html', ind=ind, pages=pages, pagenum=pagenum, tag=tagname)
 
 if __name__=='__main__':
-    app.run(host='0.0.0.0')
+    host = '127.0.0.1' if args.local else '0.0.0.0'
+    app.run(host=host, port=args.port)
