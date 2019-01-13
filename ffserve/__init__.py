@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import ffmirror.metadb as metadb
+import ffmirror
 import os
 
 from itertools import chain
@@ -173,7 +174,18 @@ def favorite(sid):
         abort(404)
     sfn = os.path.join('.favs', so.unique_filename())
     if so.download_time is None or so.updated > so.download_time:
-        g.mirror.story_to_archive(so, rfn=sfn, silent=True)
+        try:
+            g.mirror.story_to_archive(so, rfn=sfn,
+                                      silent=not app.config['DEBUG'])
+        except Exception:
+            mod = ffmirror.sites[so.archive]
+            md = so.get_metadata()
+            story_url = mod.get_story_url(md)
+            author_url = mod.get_user_url(md)
+            # TODO make a prettier error page for this
+            abort(502, description=f"Could not download story " +
+                  f"{story_url} " +
+                  f"(author {author_url})")
     return redirect(url_for('story', filepath=sfn))
 
 sorts = { 'title': metadb.Story.title, 'author': metadb.Author.name,
