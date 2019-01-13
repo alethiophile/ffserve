@@ -1,0 +1,2 @@
+FF_DIR = '/path/to/ffmirror/archive'
+PAGE_THRES = 100
