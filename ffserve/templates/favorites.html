@@ -1,0 +1,32 @@
+{% macro story_list(listing) -%}
+    <ul>
+      {% for story in listing|sort_by(order) %}
+        <li class="story">{% if story.author.in_mirror %}<a href="{{ url_for('story', filepath=(story.download_fn or '')) }}">{{ story.title }}</a>{% else %}
+          {{ story.title }} (<a href="{{ url_for('favorite', sid=story.id) }}">download</a>){% endif %}{% if story.author != ao %} by <a href="{{ url_for('favs', author=story.author.id) }}">{{ story.author.name }}</a>{% endif %}<br />
+          <small><em>{% for tag in story.tags %}<a href="{{ url_for('tag', tagname=tag.name) }}">{{ tag.name }}</a>{% if not loop.last %}&nbsp;&nbsp;&nbsp;{% endif %}{% endfor %}</em></small><br />
+          {{ story.summary }}<br />
+          Words: {{ story.words|format_number }} — Chapters: {{ story.chapters }} — {% if story.category %}Category: {{ story.category }} — {% endif %}{% if story.genre %}{{ story.genre }} — {% endif %}{% if story.characters %}Characters: {{ story.characters }} — {% endif %}Published: {{ story.published|format_date }} — Updated: {{ story.updated|format_date }}{% if story.complete %} — Complete{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+{%- endmacro %}
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>{{ ao.name }}'s favorites ({{ ao.fav_stories|length }})</title>
+    <style>
+     li.story { margin-bottom: 10px; }
+     body { font-family: sans-serif; }
+    </style>
+  </head>
+  <body>
+    <h2>{{ ao.name }}</h2>
+    {% if ao.in_mirror %}<a href="{{ url_for('to_author', author=ao.id) }}">View in listing</a> | {% endif %}<a href="{{ ao.source_site_url() }}">Original site</a><br />
+    <small>Order by:{% for i in ['title', 'author', 'category', 'words', 'updated'] %}&nbsp;&nbsp;<a href="?sort={{ i }}">{{ i }}</a>{% endfor %}</small><br />
+    <small><a href="#favs">To favorites</a></small>
+    <h3>Stories ({{ ao.stories_written|length }})</h3>
+    {{ story_list(ao.stories_written) }}
+    <h3><a name="favs">Favorites</a> ({{ ao.fav_stories|length }})</h3>
+    {{ story_list(ao.fav_stories) }}
+  </body>
+</html>

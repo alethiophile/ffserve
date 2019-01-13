@@ -1,37 +1,40 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>{% if tag %}Tag {{ tag }}{% else %}Index{% endif %} — {{ ind|length }} authors</title>
+    <title>{% if tag %}Tag {{ tag }}{% else %}Index{% endif %} — {{ alist|length }} authors</title>
     <style>
      li.story { margin-bottom: 10px; }
      body { font-family: sans-serif; }
     </style>
   </head>
   <body>
-    <h2>{% if tag %}All stories with tag {{ tag }}{% else %}Index of stories{% endif %} ― {{ ind|length }} authors</h2>
+    <h2>{% if tag %}All stories with tag {{ tag }}{% else %}Index of stories{% endif %} ― {{ alist|length }} authors</h2>
     {% if tag %}<a href="/">All stories</a>{% endif %}
-    <ul>
-      {% for name in ind.keys()|sort %}
-        <li><a href="{% if g.in_page(name, pages) != pagenum %}?page={{ g.in_page(name, pages) }}{% endif %}#{{ ind[name][0]['authorid'] }}">{{ name|e }} ({{ ind[name]|length }})</a></li>
+    <ul>{% set cpage, last_page = get_page(pagenum, alist) %}
+      {% for auth in alist %}
+        <li><a href="{% if auth in cpage %}#{{ auth.id }}{% else %}{{ page_url(find_author(auth, alist)) }}#{{ auth.id }}{% endif %}">{{ auth.name }} ({{ auth.query_stories|length }})</a></li>
       {% endfor %}
     </ul>
     <a name="liststart" />
-    {% if pagenum > 0 %}<div style="text-align: left; width: 50%; float: left"><a href="?page={{ pagenum - 1 }}#liststart">&lt; Previous page</a></div>{% endif %}
-    {% if pagenum < (pages|length - 1) %}<div style="text-align: right; width: 50%; float: right"><a href="?page={{ pagenum + 1 }}#liststart">Next page &gt;</a></div>{% endif %}
+    {% if pagenum > 0 %}<div style="text-align: left; width: 50%; float: left"><a href="{{ page_url(pagenum - 1) }}#liststart">&lt; Previous page</a></div>{% endif %}
+    {% if not last_page %}<div style="text-align: right; width: 50%; float: right"><a href="{{ page_url(pagenum + 1) }}#liststart">Next page &gt;</a></div>{% endif %}
     <br />
-    {% for name in pages[pagenum] %}
-      <h3><a name="{{ ind[name][0]['authorid'] }}">Stories by {{ name }} (id {{ ind[name][0]['authorid'] }})</a></h3>
+    {% for auth in cpage %}
+      <h3><a name="{{ auth.id }}">Stories by {{ auth.name }} (id {{ auth.archive }}-{{ auth.site_id }})</a></h3>
+      <a href="{{ url_for('favs', author=auth.id) }}">Favorites</a>
       <ul>
-        {% for story in ind[name]|sort(attribute='title')|sort(attribute='category') %}
-          <li class="story"><a href="{{ g.url_for('story', filepath=story.filename) }}">{{ story.title }}</a><br />
-            <small><em>{% for tag in story.tags|sort %}<a href="{{ g.url_for('tag', tagname=tag) }}">{{ tag }}</a>{% if not loop.last %}&nbsp;&nbsp;&nbsp;{% endif %}{% endfor %}</em></small><br />
-            {{ story.summary|e }}<br />
-            Words: {{ g.format_number(story.words) }} — Chapters: {{ story.chapters }} — Category: {{ story.category }} — {% if story.genre %}{{ story.genre }} — {% endif %}{% if story.characters %}Characters: {{ story.characters }} — {% endif %}Published: {{ g.format_date(story.published) }} — Updated: {{ g.format_date(story.updated) }}
+        {% for story in auth.query_stories|stories_present|sort(attribute='title')|sort(attribute='category') %}
+          <li class="story"><a href="{{ url_for('story', filepath=story.download_fn) }}">{{ story.title }}</a><br />
+            <small><em>{% for ctag in story.tags|sort(attribute='name') %}<a href="{{ url_for('tag', tagname=ctag.name) }}">{{ ctag.name }}</a>{% if not loop.last %}&nbsp;&nbsp;&nbsp;{% endif %}{% endfor %}</em></small><br />
+            {{ story.summary }}<br />
+            Words: {{ story.words|format_number }} — Chapters: {{ story.chapters }} — Category: {{ story.category }} —
+            {{ story.genre }} — {% if story.characters %}Characters: {{ story.characters }} — {% endif %}Published:
+            {{ story.published|format_date }} — Updated: {{ story.updated|format_date }}
           </li>
         {% endfor %}
       </ul>
     {% endfor %}
-    {% if pagenum > 0 %}<div style="text-align: left; width: 50%; float: left"><a href="?page={{ pagenum - 1 }}#liststart">&lt; Previous page</a></div>{% endif %}
-    {% if pagenum < (pages|length - 1) %}<div style="text-align: right; width: 50%; float: right"><a href="?page={{ pagenum + 1 }}#liststart">Next page &gt;</a></div>{% endif %}
+    {% if pagenum > 0 %}<div style="text-align: left; width: 50%; float: left"><a href="{{ page_url(pagenum - 1) }}#liststart">&lt; Previous page</a></div>{% endif %}
+    {% if not last_page %}<div style="text-align: right; width: 50%; float: right"><a href="{{ page_url(pagenum + 1) }}#liststart">Next page &gt;</a></div>{% endif %}
   </body>
 </html>
