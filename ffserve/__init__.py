@@ -53,7 +53,7 @@ def stories_present(slist):
 
 @app.before_request
 def req_setup():
-    g.mirror = metadb.DBMirror(app.config['FF_DIR'], debug=True)
+    g.mirror = metadb.DBMirror(app.config['FF_DIR'], debug=app.config['DEBUG'])
     g.mirror.connect()
     app.config['FAV_DIR'] = os.path.join(app.config['FF_DIR'], '.favs')
 
@@ -175,3 +175,23 @@ def favorite(sid):
     if so.download_time is None or so.updated > so.download_time:
         g.mirror.story_to_archive(so, rfn=sfn, silent=True)
     return redirect(url_for('story', filepath=sfn))
+
+sorts = { 'title': metadb.Story.title, 'author': metadb.Author.name,
+          'category': metadb.Story.category, 'words': metadb.Story.words,
+          'updated': metadb.Story.updated.desc() }
+
+@app.route('/all_stories')
+def all_stories():
+    order = request.args.get('sort', 'updated')
+    page_count = app.config['PAGE_THRES']
+    page = int(request.args.get('page', 0))
+    all_stories = (g.mirror.ds.query(metadb.Story, metadb.Author).
+                   options(metadb.joinedload(metadb.Story.tags)).
+                   filter(metadb.Story.author_id == metadb.Author.id).
+                   filter(metadb.Author.in_mirror == True))  # noqa: E712
+    num_stories = all_stories.count()
+    last_page = num_stories // page_count
+    sl = (all_stories.order_by(sorts[order]).
+          limit(page_count).offset(page * page_count).all())
+    return render_template('all_stories.html', listing=sl, page=page,
+                           last_page=last_page)

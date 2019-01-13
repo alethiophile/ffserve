@@ -1,0 +1,32 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>All stories</title>
+    <style>
+      li.story { margin-bottom: 10px; }
+      body { font-family: sans-serif; }
+    </style>
+  </head>
+  <body>
+    <!-- last page is {{ last_page }} -->
+    <h2>All stories</h2>
+    <small><a href="{{ url_for('index') }}">Back to index</a></small><br />
+    <small>Order by:{% for i in ['title', 'author', 'category', 'words', 'updated'] %}&nbsp;&nbsp;<a href="?sort={{ i }}">{{ i }}</a>{% endfor %}</small><br /><br />
+    {% if page > 0 %}<div style="text-align: left; width: 50%; float: left"><a href="{{ page_url(page - 1) }}">&lt; Previous page</a></div>{% endif %}
+    {% if page < last_page %}<div style="text-align: right; width: 50%; float: right"><a href="{{ page_url(page + 1) }}">Next page &gt;</a></div>{% endif %}
+    <br />
+    <ul>
+      {% for entry in listing %}{% set story = entry[0] %}
+        <li class="story">{% if story.author.in_mirror %}<a href="{{ url_for('story', filepath=(story.download_fn or '')) }}">{{ story.title }}</a>{% else %}
+          {{ story.title }} (<a href="{{ url_for('favorite', sid=story.id) }}">download</a>){% endif %}{% if story.author != ao %} by <a href="{{ url_for('favs', author=story.author.id) }}">{{ story.author.name }}</a>{% endif %}<br />
+          <small><em>{% for tag in story.tags %}<a href="{{ url_for('tag', tagname=tag.name) }}">{{ tag.name }}</a>{% if not loop.last %}&nbsp;&nbsp;&nbsp;{% endif %}{% endfor %}</em></small><br />
+          {{ story.summary }}<br />
+          Words: {{ story.words|format_number }} — Chapters: {{ story.chapters }} — {% if story.category %}Category: {{ story.category }} — {% endif %}{% if story.genre %}{{ story.genre }} — {% endif %}{% if story.characters %}Characters: {{ story.characters }} — {% endif %}Published: {{ story.published|format_date }} — Updated: {{ story.updated|format_date }}{% if story.complete %} — Complete{% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+    {% if page > 0 %}<div style="text-align: left; width: 50%; float: left"><a href="{{ page_url(page - 1) }}">&lt; Previous page</a></div>{% endif %}
+    {% if page < last_page %}<div style="text-align: right; width: 50%; float: right"><a href="{{ page_url(page + 1) }}">Next page &gt;</a></div>{% endif %}
+    <br />
+  </body>
+</html>
