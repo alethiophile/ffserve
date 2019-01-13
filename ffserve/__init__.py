@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 import ffmirror.metadb as metadb
-import os, argparse
+import os
 
 from itertools import chain
 from operator import attrgetter
@@ -175,30 +175,3 @@ def favorite(sid):
     if so.download_time is None or so.updated > so.download_time:
         g.mirror.story_to_archive(so, rfn=sfn, silent=True)
     return redirect(url_for('story', filepath=sfn))
-
-if __name__ == '__main__':
-    import autoport
-    ap = argparse.ArgumentParser(description="Browse an ffmirror archive over the Web")
-    ap.add_argument("-d", "--debug", dest="DEBUG", action="store_true",
-                    help="Debug in browser", default=False)
-    ap.add_argument("--page-thres", dest="PAGE_THRES", type=int,
-                    help="Minimum story entries per page", default=100)
-    ap.add_argument("-l", "--local", action="store_true",
-                    help="Listen only on local interface", default=False)
-    ap.add_argument("-p", "--port", help="HTTP server port", default='5000')
-    ap.add_argument("-e", "--escaped", action="store_true",
-                    help="Autoport-escaped directory value", default=False)
-    ap.add_argument("FF_DIR", help="Mirror directory")
-    args = ap.parse_args()
-    if args.escaped:
-        args.FF_DIR = autoport.unescape_path(args.FF_DIR)
-    app.config.from_object(args)
-
-    if args.port == 'auto':
-        args.port = autoport.get_port('ffserve:' +
-                                      autoport.escape_path(args.FF_DIR))
-    else:
-        args.port = int(args.port)
-
-    host = '127.0.0.1' if args.local else '0.0.0.0'
-    app.run(host=host, port=args.port)
