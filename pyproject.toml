@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "ffserve"
+version = "0.1.0"
+description = "Web application for browsing ffmirror archives"
+authors = ["alethiophile <tomdicksonhunt@gmail.com>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+flask = "^1.0"
+ffmirror = {path = "../ffmirror/"}
+
+[tool.poetry.dev-dependencies]
+python-dotenv = "^0.10.1"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
