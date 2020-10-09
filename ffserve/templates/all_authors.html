@@ -1,0 +1,15 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Index — {{ alist|length }} authors</title>
+  </head>
+  <body>
+    <h2>{{ alist|length }} authors</h2>
+    <a href="{{ url_for('all_stories') }}">All stories</a><br />
+    <ul>
+      {% for auth in alist %}
+        <li><a href="{{ url_for('favs', author=auth.id) }}">{{ auth.name }} ({{ auth.stories_written|length }})</a></li>
+      {% endfor %}
+    </ul>
+  </body>
+</html>

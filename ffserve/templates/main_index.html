@@ -9,7 +9,6 @@
   </head>
   <body>
     <h2>{% if tag %}All stories with tag {{ tag }}{% else %}Index of stories{% endif %} ― {{ alist|length }} authors</h2>
-    {% if tag %}<a href="/">All stories</a><br />{% endif %}
     <small><a href="{{ url_for('all_stories') }}">Full story list</a></small>
     <ul>{% set cpage, last_page = get_page(pagenum, alist) %}
       {% for auth in alist %}

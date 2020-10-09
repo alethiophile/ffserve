@@ -21,7 +21,7 @@
   </head>
   <body>
     <h2>{{ ao.name }}</h2>
-    {% if ao.in_mirror %}<a href="{{ url_for('to_author', author=ao.id) }}">View in listing</a> | {% endif %}<a href="{{ ao.source_site_url() }}">Original site</a><br />
+    <a href="{{ ao.source_site_url() }}">Original site</a><br />
     <small>Order by:{% for i in ['title', 'author', 'category', 'words', 'updated'] %}&nbsp;&nbsp;<a href="?sort={{ i }}">{{ i }}</a>{% endfor %}</small><br />
     <small><a href="#favs">To favorites</a></small>
     <h3>Stories ({{ ao.stories_written|length }})</h3>

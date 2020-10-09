@@ -10,7 +10,7 @@
   <body>
     <!-- last page is {{ last_page }} -->
     <h2>All stories</h2>
-    <small><a href="{{ url_for('index') }}">Back to index</a></small><br />
+    <small><a href="{{ url_for('all_authors') }}">Author list</a></small><br />
     <small>Order by:{% for i in ['title', 'author', 'category', 'words', 'updated'] %}&nbsp;&nbsp;<a href="?sort={{ i }}">{{ i }}</a>{% endfor %}</small><br /><br />
     {% if page > 0 %}<div style="text-align: left; width: 50%; float: left"><a href="{{ page_url(page - 1) }}">&lt; Previous page</a></div>{% endif %}
     {% if page < last_page %}<div style="text-align: right; width: 50%; float: right"><a href="{{ page_url(page + 1) }}">Next page &gt;</a></div>{% endif %}
