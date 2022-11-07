@@ -160,7 +160,7 @@ def story(storyid):
     sd = md / story.download_fn
     if not sd.is_dir():
         abort(404)
-    for c in story.chapters:
+    for c in story.all_chapters:
         fp = sd / f"{c.num:04d}.html"
         c.chapter_text = fp.read_text()
     return render_template('view_story.html', story=story)
