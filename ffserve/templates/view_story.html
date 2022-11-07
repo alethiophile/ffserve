@@ -13,9 +13,9 @@
     Words: {{ story.words|format_number }} — Chapters: {{ story.chapters }} — {% if story.category %}Category: {{ story.category }} — {% endif %}{% if story.genre %}{{ story.genre }} — {% endif %}{% if story.characters %}Characters: {{ story.characters }} — {% endif %}Published: {{ story.published|format_date }} — Updated: {{ story.updated|format_date }}{% if story.complete %} — Complete{% endif %}
     <h2>Contents</h2>
     <ol>
-      {% for chapter in story.chapters %}<li><a href="#ch{{ chapter.num }}">{{ chapter.title }}</a></li>{% endfor %}
+      {% for chapter in story.all_chapters %}<li><a href="#ch{{ chapter.num }}">{{ chapter.title }}</a></li>{% endfor %}
     </ol>
-    {% for chapter in story.chapters %}
+    {% for chapter in story.all_chapters %}
       <h2 id="ch{{ chapter.num }}">chapter.title</h2>
       {{ chapter.chapter_text }}
     {% endfor %}
