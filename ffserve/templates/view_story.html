@@ -17,7 +17,7 @@
     </ol>
     {% for chapter in story.all_chapters %}
       <h2 id="ch{{ chapter.num }}">chapter.title</h2>
-      {{ chapter.chapter_text }}
+      {{ chapter.chapter_text | safe }}
     {% endfor %}
   </body>
 </html>
