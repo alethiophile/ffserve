@@ -24,7 +24,7 @@
       <a href="{{ url_for('favs', author=auth.id) }}">Favorites</a>
       <ul>
         {% for story in auth.query_stories|stories_present|sort(attribute='title')|sort(attribute='category') %}
-          <li class="story"><a href="{{ url_for('story', filepath=story.download_fn) }}">{{ story.title }}</a><br />
+          <li class="story"><a href="{{ url_for('story', storyid=story.id) }}">{{ story.title }}</a><br />
             <small><em>{% for ctag in story.tags|sort(attribute='name') %}<a href="{{ url_for('tag', tagname=ctag.name) }}">{{ ctag.name }}</a>{% if not loop.last %}&nbsp;&nbsp;&nbsp;{% endif %}{% endfor %}</em></small><br />
             {{ story.summary }}<br />
             Words: {{ story.words|format_number }} — Chapters: {{ story.chapters }} — Category: {{ story.category }} —

@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>{{ story.title }}</title>
+    <style>
+      body { font-family: sans-serif; }
+    </style>
+  </head>
+  <body>
+    <h1>{{ story.title }}</h1>
+    <small><em>{% for tag in story.tags %}<a href="{{ url_for('tag', tagname=tag.name) }}">{{ tag.name }}</a>{% if not loop.last %}&nbsp;&nbsp;&nbsp;{% endif %}{% endfor %}</em></small><br />
+    {{ story.summary }}<br />
+    Words: {{ story.words|format_number }} — Chapters: {{ story.chapters }} — {% if story.category %}Category: {{ story.category }} — {% endif %}{% if story.genre %}{{ story.genre }} — {% endif %}{% if story.characters %}Characters: {{ story.characters }} — {% endif %}Published: {{ story.published|format_date }} — Updated: {{ story.updated|format_date }}{% if story.complete %} — Complete{% endif %}
+    <h2>Contents</h2>
+    <ol>
+      {% for chapter in story.chapters %}<li><a href="#ch{{ chapter.num }}">{{ chapter.title }}</a></li>{% endfor %}
+    </ol>
+    {% for chapter in story.chapters %}
+      <h2 id="ch{{ chapter.num }}">chapter.title</h2>
+      {{ chapter.chapter_text }}
+    {% endfor %}
+  </body>
+</html>

@@ -3,6 +3,7 @@
 import ffmirror.metadb as metadb
 # import ffmirror
 import os
+from pathlib import Path
 
 from itertools import chain
 from operator import attrgetter
@@ -143,12 +144,28 @@ def to_author(author):
         return redirect(url_for('index', page=page) + '#' + author)
     abort(404)
 
-@app.route('/story/<path:filepath>')
-def story(filepath):
-    if not filepath.endswith('.html'):
+@app.route('/story/<storyid>')
+def story(storyid):
+    # if not filepath.endswith('.html'):
+    #     abort(404)
+    try:
+        story = (g.mirror.ds.query(metadb.Story).
+                 options(metadb.joinedload(metadb.Story.all_chapters)).
+                 filter_by(id=storyid).one())
+    except metadb.exc.NoResultFound:
         abort(404)
-    return send_from_directory(app.config['FF_DIR'], filepath,
-                               mimetype='text/html')
+    if not story.download_fn:
+        abort(404)
+    md = Path(g.mirror.mdir)
+    sd = md / story.download_fn
+    if not sd.is_dir():
+        abort(404)
+    for c in story.chapters:
+        fp = sd / f"{c.num:04d}.html"
+        c.chapter_text = fp.read_text()
+    return render_template('view_story.html', story=story)
+    # return send_from_directory(app.config['FF_DIR'], filepath,
+    #                            mimetype='text/html')
 
 @app.route('/tag/<path:tagname>')
 def tag(tagname):

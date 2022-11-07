@@ -17,7 +17,7 @@
     <br />
     <ul>
       {% for entry in listing %}{% set story = entry[0] %}
-        <li class="story">{% if story.author.in_mirror %}<a href="{{ url_for('story', filepath=(story.download_fn or '')) }}">{{ story.title }}</a>{% else %}
+        <li class="story">{% if story.author.in_mirror %}<a href="{{ url_for('story', storyid=story.id) }}">{{ story.title }}</a>{% else %}
           {{ story.title }} (<a href="{{ url_for('favorite', sid=story.id) }}">download</a>){% endif %}{% if story.author != ao %} by <a href="{{ url_for('favs', author=story.author.id) }}">{{ story.author.name }}</a>{% endif %}<br />
           <small><em>{% for tag in story.tags %}<a href="{{ url_for('tag', tagname=tag.name) }}">{{ tag.name }}</a>{% if not loop.last %}&nbsp;&nbsp;&nbsp;{% endif %}{% endfor %}</em></small><br />
           {{ story.summary }}<br />
