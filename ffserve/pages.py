@@ -194,7 +194,10 @@ def favs(author):
         ao = g.mirror.ds.query(metadb.Author).filter_by(id=author).one()
     except metadb.exc.NoResultFound:
         abort(404)
-    g.mirror.sync_author(ao)
+    try:
+        g.mirror.sync_author(ao)
+    except Exception:
+        pass
     ao = (g.mirror.ds.query(metadb.Author)
           .options(  # metadb.joinedload(metadb.Author.fav_stories)
                      # .joinedload('author'),
