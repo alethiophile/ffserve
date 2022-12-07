@@ -1,3 +1,6 @@
+UPDATE: The ffserve code has now been merged back into ffmirror. This
+repository is now obsolete.
+
 This is a Flask web app that interacts with ffmirror to allow you to view a
 local fanfiction mirror over the Web. It fulfills the same purpose as the
 now-obsolete server.py in ffmirror.
